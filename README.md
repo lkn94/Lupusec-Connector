@@ -1,7 +1,7 @@
 # Lupusec-Connector
 This connector is written in Python and can be used to connect the Lupusec XT1 to your OpenHAB. Please keep in mind that this script only connects to your alarm device and gets the data of sensors or the alarm system itself. There's no caching. The connector should make it easy to integrate the device to your smart home plattform.
 
-**At the moment it's not possible to change the alarm state of your device. But this function will be added soon.**
+**Important note:** This script has been tested with the alarm system Lupusec XT1 Plus
 
 ## How to start
 
@@ -23,8 +23,14 @@ You can use the IP of the device where the script is located. It will start on p
 
 ## APIs
 
-- alarmstate
-- sensor/SENSOR_ID
+```
+http://IP_OF_THE_DEVICE:5000/
+http://IP_OF_THE_DEVICE:5000/alarmstate
+http://IP_OF_THE_DEVICE:5000/sensor/{SENSOR_ID}
+http://IP_OF_THE_DEVICE:5000/alarmstate/{number of the state}
+```
+
+You will find more information about the number of the state below.
 
 ### Sensor ID
 
@@ -138,3 +144,31 @@ A full response of this API looks like the following:
     }
 }
 ```
+
+To change the alarm state you have to send a get request to the following endpoint:
+
+```
+http://IP_OF_THE_DEVICE:5000/setstate/{number of the state}
+```
+The following numbers of states are available:
+
+- 0: Disarm
+- 1: Arm
+- 2: Home
+
+In OpenHAB you can use a switch to arm or disarm your system.
+
+The script will return the original response of your alarm system looking like the following:
+
+```json
+{
+"result" : 1,
+"message" : "{WEB_MSG_SUBMIT_SUCCESS}"
+}
+```
+
+#### X-Token
+
+You can find an x-token if you navigate to your alarm system panel with your browser and open the developer tools (F12). Navigate to network and find the request **panelCondPost**. There's an x-token you need to copy into the head of the python script.
+
+Without an x-token you're not able to control your alarm system!
